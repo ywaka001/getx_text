@@ -15,14 +15,14 @@ class DrpDwnSetting {
 
 class DrpDwnSetting2 {
   DrpDwnSetting2(
-      {this.label = '',
-      this.lists,
-      this.onChangedCallBack,
-      this.dropdownValue = ''});
-  String label;
-  List<String>? lists;
-  Function? onChangedCallBack;
-  String dropdownValue;
+      {this.label2 = '',
+      this.lists2,
+      this.onChangedCallBack2,
+      this.dropdownValue2 = ''});
+  String label2;
+  List<String>? lists2;
+  Function? onChangedCallBack2;
+  String dropdownValue2;
 }
 
 class User {

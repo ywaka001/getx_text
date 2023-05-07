@@ -12,12 +12,12 @@ class ClsGetxController extends GetxController {
     super.onInit();
     // drp2
     drpdwnsetting2.update((drpdwnsetting2) {
-      drpdwnsetting2?.label = 'ラベル';
-      drpdwnsetting2?.lists = ['', '1', '2'];
-      drpdwnsetting2?.dropdownValue = '1';
-      drpdwnsetting2?.onChangedCallBack = (val) {
-        drpdwnsetting2.dropdownValue = val;
-        print(drpdwnsetting2.dropdownValue);
+      drpdwnsetting2?.label2 = 'ラベル';
+      drpdwnsetting2?.lists2 = ['', '1', '2'];
+      drpdwnsetting2?.dropdownValue2 = '1';
+      drpdwnsetting2?.onChangedCallBack2 = (val) {
+        drpdwnsetting2.dropdownValue2 = val;
+        print(drpdwnsetting2.dropdownValue2);
       };
     });
     // drpdwnsetting2(DrpDwnSetting2(

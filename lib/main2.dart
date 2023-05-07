@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// https://gist.github.com/xErik/71d006f9334512a415f63a255844d13e
+
 
 class User {
   final name = ''.obs;
@@ -17,7 +17,9 @@ class Controller extends GetxController {
   final user = User();
 }
 
-void main() => runApp(GetMaterialApp(home: Home()));
+void main() => runApp(
+
+    GetMaterialApp(initialRoute: '/', getPages: [], home: Home()));
 
 class Home extends StatelessWidget {
   final Controller c = Get.put(Controller());

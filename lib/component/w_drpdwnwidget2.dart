@@ -21,10 +21,10 @@ class DropDownWidget2 extends StatelessWidget {
       // mainAxisAlignment: MainAxisAlignment.start,
       // mainAxisSize: MainAxisSize.min,
       children: [
-        // Obx(() => Text(setting.value.label)),
+        Obx(() => Text(setting.value.dropdownValue2)),
         Container(
           width: 70,
-          child: Text(setting.value.label),
+          child: Text(setting.value.label2),
         ),
         Container(
           height: 30,
@@ -36,12 +36,12 @@ class DropDownWidget2 extends StatelessWidget {
           child: DropdownButtonHideUnderline(
             child: Obx(() {
               return DropdownButton<String>(
-                value: setting.value.dropdownValue,
+                value: setting.value.dropdownValue2,
                 icon: const Icon(Icons.arrow_drop_down),
                 elevation: 16,
                 style: const TextStyle(color: Colors.black),
                 items:
-                    setting.value.lists.map<DropdownMenuItem<String>>((item) {
+                    setting.value.lists2.map<DropdownMenuItem<String>>((item) {
                   return DropdownMenuItem<String>(
                     value: item,
                     child: Container(
@@ -51,7 +51,7 @@ class DropDownWidget2 extends StatelessWidget {
                   );
                 }).toList(),
                 onChanged: (val) {
-                  setting.value.onChangedCallBack?.call(val);
+                  setting.value.onChangedCallBack2?.call(val);
                 },
               );
             }),

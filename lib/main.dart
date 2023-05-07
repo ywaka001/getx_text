@@ -37,7 +37,8 @@ class MyHomePage extends StatelessWidget {
         title: Text(title),
       ),
       body: Center(
-        child: Column(
+        child: Flex(
+          direction: Axis.vertical,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
@@ -48,9 +49,96 @@ class MyHomePage extends StatelessWidget {
               txtsetting: c.user,
             ),
             DropDownWidget2(setting: c.drpdwnsetting2),
+            ElevatedButton(
+                onPressed: () {
+                  dynamic rst = UserProvider()
+                      .getUser()
+                      .then((value) => print('data==>>$value'));
+                  print(rst);
+                },
+                child: Text('get')),
+            ElevatedButton(
+                onPressed: () async {
+                  final socket = UserProvider().userMessages();
+                  socket.onOpen(() {
+                    socket.send('データ');
+                  });
+                  // socket.send('データ3');
+
+                  socket.connect();
+                  socket.onMessage((val) {
+                    print('onM===>>${val}');
+                    socket.close();
+                  });
+                  socket.onClose((p0) {
+                    print('close==>${p0.reason} : ${p0.message} ');
+                  });
+                  // print('onclose start');
+                  // socket.onClose((p0) {
+                  //   print('close==>${p0.reason}');
+                  // });
+                  //
+                  //
+                  // socket.onOpen(() {
+                  //   socket.send('データ');
+                  // });
+                  //
+                  // socket.onMessage((val) {
+                  //   print('===>>$val');
+                  // });
+                  // socket.onClose((p0) {
+                  //   print('close==>$p0');
+                  // });
+                },
+                child: Text('socket')),
+            SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  print('socket only start');
+                  GetSocket socket = UserProvider().userMessages();
+                  socket.onOpen(() {
+                    socket.send('aaaaaaaaaaaaaaaaa');
+                  });
+                  socket.connect().then((value) => socket.close());
+                  print(socket);
+                },
+                child: Text('socket close')),
           ],
         ),
       ),
     );
+  }
+}
+
+class UserProvider extends GetConnect {
+  // Get リクエスト
+
+  Future<dynamic> getUser() async {
+    final dynamic response = await get('http://127.0.0.1:5000/');
+    if (response.status.hasError) {
+      print('err');
+      return Future.error(response.statusText);
+    } else {
+      print('OK');
+      return response.body;
+    }
+  }
+
+  // Future<Response> getUser() => get('http://127.0.0.1/fruits');
+  // Post リクエスト
+  // Future<Response> postUser(Map data) => post('http://youapi/users', body: data);
+  // File付き Post リクエスト
+  // Future<Response<CasesModel>> postCases(List<int> image) {
+  //   final form = FormData({
+  //     'file': MultipartFile(image, filename: 'avatar.png'),
+  //     'otherFile': MultipartFile(image, filename: 'cover.png'),
+  //   });
+  //   return post('http://youapi/users/upload', form);
+  // }
+
+  GetSocket userMessages() {
+    return socket('http://localhost:5000/socket');
   }
 }
