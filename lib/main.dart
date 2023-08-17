@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:getx_test/component/w_dropdown.dart';
 import 'package:getx_test/cotroller/c_getxcontroler.dart';
 import 'package:getx_test/component/w_drpdwnwidget2.dart';
-import 'package:getx_test/model/m_dropdown.dart';
+import 'package:get/get_connect.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +28,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+GlobalKey globalKey = GlobalKey(); //←これが重要
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key, required this.title});
@@ -49,8 +55,34 @@ class MyHomePage extends StatelessWidget {
               txtsetting: c.user,
             ),
             DropDownWidget2(setting: c.drpdwnsetting2),
+            PositionedContainer(
+              height: 50,
+              onPositionChanged: (position) {
+                print('$position');
+              },
+            ),
+            GestureDetector(
+              onTap: () {
+                print('test');
+              },
+              onTapDown: (TapDownDetails details) {
+                print(details.globalPosition);
+              },
+              child: Container(
+                child: Text('座標'),
+                width: 100,
+                height: 100,
+                color: Colors.red,
+              ),
+            ),
             ElevatedButton(
+                key: globalKey, //←知りたいWidgetにGlobalKeyをセット
                 onPressed: () {
+                  //↓変数はRenderBoxで宣言（.findRenderObject()で帰ってくるのは"RenderObject"のため
+                  RenderBox box =
+                      globalKey.currentContext!.findRenderObject() as RenderBox;
+                  print("ウィジェットのサイズ :${box.size}");
+                  print("ウィジェットの位置 :${box.localToGlobal(Offset.zero)}");
                   dynamic rst = UserProvider()
                       .getUser()
                       .then((value) => print('data==>>$value'));
@@ -116,7 +148,15 @@ class UserProvider extends GetConnect {
   // Get リクエスト
 
   Future<dynamic> getUser() async {
-    final dynamic response = await get('http://127.0.0.1:5000/');
+    final data = await rootBundle.load('assets/certificate.crt');
+    final certificate = data.buffer.asUint8List();
+    final url = 'https://127.0.0.1:5000/';
+
+    // final dynamic response = await get('https://127.0.0.1:5000/');
+    final encodedCertificate = base64Encode(certificate);
+    final dynamic response =
+        await get(url, headers: {'certificate': encodedCertificate});
+
     if (response.status.hasError) {
       print('err');
       return Future.error(response.statusText);
@@ -124,6 +164,16 @@ class UserProvider extends GetConnect {
       print('OK');
       return response.body;
     }
+  }
+
+  @override
+  void onInit() {
+    HttpClient client = new HttpClient();
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) {
+      // 自己証明書を受け入れる
+      return true;
+    };
   }
 
   // Future<Response> getUser() => get('http://127.0.0.1/fruits');
@@ -140,5 +190,34 @@ class UserProvider extends GetConnect {
 
   GetSocket userMessages() {
     return socket('http://localhost:5000/socket');
+  }
+}
+
+class PositionedContainer extends StatelessWidget {
+  const PositionedContainer(
+      {required this.height, required this.onPositionChanged});
+
+  final double height;
+  final ValueChanged<Offset> onPositionChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      color: Colors.blue,
+      child: GestureDetector(
+        onTap: () {
+          RenderBox renderBox = context.findRenderObject() as RenderBox;
+          Offset containerPosition = renderBox.localToGlobal(Offset.zero);
+          onPositionChanged(containerPosition);
+        },
+        child: Center(
+          child: Text(
+            'Container',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    );
   }
 }
